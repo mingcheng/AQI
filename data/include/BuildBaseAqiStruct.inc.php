@@ -8,13 +8,22 @@
  * @link   http://www.gracecode.com/
  */
 
-require_once __DIR__ . "/../config.inc.php";
-require_once __DIR__ . "/../common.inc.php";
+class BuildBaseAqiStruct extends Base {
+    protected $data;
 
-global $Database;
+    function __construct() {
+        parent::__construct();
+    }
 
-echo "[structs] begin build aqi database struct";
-$query = "CREATE TABLE IF NOT EXISTS aqi (
+    public function run() {
+        $this->buildTableStructs();
+        $this->buildDatabaseIndex();
+    }
+
+
+    private function buildTableStructs() {
+        $this->log("[struct] begin build aqi database struct");
+        $query = "CREATE TABLE IF NOT EXISTS aqi (
             ID INTEGER NOT NULL PRIMARY KEY,
             division UNSIGNED BIG INT(10) NOT NULL,            
             areaName VARCHAR(12) DEFAULT NULL,
@@ -23,27 +32,30 @@ $query = "CREATE TABLE IF NOT EXISTS aqi (
             recordDate DATE NOT NULL,
             _fetchDate DATE NOT NULL,
             source VARCHAR(8) DEFAULT NULL
-    )";
-$Database->exec($query);
+        )";
+        $this->Database->exec($query);
 
-$query = "CREATE TABLE IF NOT EXISTS pollutant (
+        $query = "CREATE TABLE IF NOT EXISTS pollutant (
             ID INTEGER NOT NULL PRIMARY KEY,
             name VARCHAR(32) NOT NULL
-    )";
-$Database->exec($query);
-echo "...finished\n";
+        )";
+        $this->Database->exec($query);
+        $this->log("...finished\n");
+    }
 
 
-echo "[structs] begin build aqi database index";
-$create_idx = array(
-    "CREATE INDEX aqiRecordTimeIdx ON aqi(recordDate)",
-    "CREATE INDEX aqiDivisionIdx ON aqi(division)",
-    "CREATE INDEX aqiAreaNameIdx ON aqi(areaName)",
-    "CREATE INDEX aqiPollutantNameIdx ON pollutant(name)"
-);
+    private function buildDatabaseIndex() {
+        $this->log("[struct] begin build struct database index");
+        $create_idx = array(
+            "CREATE INDEX aqiRecordTimeIdx ON aqi(recordDate)",
+            "CREATE INDEX aqiDivisionIdx ON aqi(division)",
+            "CREATE INDEX aqiAreaNameIdx ON aqi(areaName)",
+            "CREATE INDEX aqiPollutantNameIdx ON pollutant(name)"
+        );
 
-foreach($create_idx as $query) {
-    $Database->exec($query);
+        foreach($create_idx as $query) {
+            $this->Database->exec($query);
+        }
+        $this->log("...finished\n");
+    }
 }
-echo "...finished\n";
-

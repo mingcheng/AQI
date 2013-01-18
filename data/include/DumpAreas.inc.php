@@ -8,17 +8,32 @@
  * @link   http://www.gracecode.com/
  */
 
-require_once __DIR__ . "/../config.inc.php";
-require_once __DIR__ . "/../common.inc.php";
+class DumpAreas extends Base {
+    private $PinYinEngine;
+    protected $data;
 
-global $Database;
+    function __construct() {
+        parent::__construct();
 
-// area data from json file
-$loc = file_get_contents(__DIR__ . "/areas.json");
-$loc_data = json_decode($loc);
+        $this->PinYinEngine = new PinYinEngine();
+        $this->data = json_decode(file_get_contents(__DIR__."/../../assets/areas.json"));
+    }
 
-// build table structs
-$query = "CREATE TABLE IF NOT EXISTS areas (
+    public function run() {
+        $this->buildTableStructs();
+
+        $this->log("[area] begin build area data");
+        foreach($this->data as $data) {
+            $this->insertArea($data);
+        }
+        $this->log("...finished\n");
+
+        $this->buildDatabaseIndex();
+    }
+
+
+    private function buildTableStructs() {
+        $query = "CREATE TABLE IF NOT EXISTS areas (
             ID INTEGER NOT NULL PRIMARY KEY,
             division UNSIGNED BIG INT(10) NOT NULL,            
             name VARCHAR(12) NOT NULL,
@@ -26,46 +41,50 @@ $query = "CREATE TABLE IF NOT EXISTS areas (
             pinyinName VARCHAR(64),
             bottom BOOLEAN DEFAULT FALSE,
             superior UNSIGNED BIG INT(10)
-            )";
-$Database->exec($query);
+        )";
 
-function insert_area($data, $superior = 0) {
-    global $Database;
-
-    $division = $data->key;
-    $name = $data->label;
-
-    $query = "INSERT INTO areas(division, name, superior) VALUES ('$division', '$name', '$superior')";
-    $results = $Database->exec($query);
-    if (!$results) {
-        echo "not updated";
+        return $this->Database->exec($query);
     }
 
-    if (isset($data->children)) {
-        foreach($data->children as $items) {
-            insert_area($items, $division);
+
+    private function buildDatabaseIndex() {
+        $this->log("[area] begin build area database index");
+        $create_idx = array(
+            "CREATE INDEX areaDivisionIdx ON areas(division)",
+            "CREATE INDEX areaNameIdx ON areas(name)",
+            "CREATE INDEX areaSuperiorIdx ON areas(surerior)"
+        );
+
+        foreach($create_idx as $query) {
+            $this->Database->exec($query);
         }
-    } else {
-        $query = "UPDATE areas SET bottom = 1 WHERE division='$division'";
-        $Database->exec($query);
+        $this->log("...finished\n");
+    }
+
+
+    // area data from json file
+    // build table structs
+    private function insertArea($data, $superior = 0) {
+        $division = $data->key;
+        $name = $data->label;
+
+        $pinyinName = $this->PinYinEngine->getAllPY($name);
+        $query = "INSERT INTO areas(division, name, pinyinName, superior) 
+            VALUES 
+            ('$division', '$name', '$pinyinName', '$superior')";
+
+        $results = $this->Database->exec($query);
+        if (!$results) {
+            $this->log("[error] database not updated");
+        }
+
+        if (isset($data->children)) {
+            foreach($data->children as $items) {
+                $this->insertArea($items, $division);
+            }
+        } else {
+            $query = "UPDATE areas SET bottom = 1 WHERE division='$division'";
+            $this->Database->exec($query);
+        }
     }
 }
-
-echo "[area] begin build area data";
-foreach($loc_data as $data) {
-    insert_area($data);
-}
-echo "...finished\n";
-
-echo "[area] begin build area database index";
-$create_idx = array(
-    "CREATE INDEX areaDivisionIdx ON areas(division)",
-    "CREATE INDEX areaNameIdx ON areas(name)",
-    "CREATE INDEX areaSuperiorIdx ON areas(surerior)"
-);
-
-foreach($create_idx as $query) {
-    $Database->exec($query);
-}
-echo "...finished\n";
-

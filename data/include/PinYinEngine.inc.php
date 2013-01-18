@@ -1,5 +1,5 @@
 <?php
-class GetPingYing {
+class PinYinEngine {
     private $pylist = array(
         'a'=>-20319,
         'ai'=>-20317,
