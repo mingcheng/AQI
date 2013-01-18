@@ -12,6 +12,7 @@ require_once __DIR__ . "/config.inc.php";
 
 function __autoload($class_name) {
     $include_dirs = array(
+        __DIR__ . '/helper',
         __DIR__ . '/include',
         __DIR__ . '/fetcher'
     );

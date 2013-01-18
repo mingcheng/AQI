@@ -11,7 +11,7 @@
 require_once __DIR__ . "/config.inc.php";
 require_once __DIR__ . "/common.inc.php";
 
-$builders = array('DumpAreas', 'BuildBaseAqiStruct');
+$builders = array('DumpAreas', 'BuildBaseAqiStruct', 'DumpDataFromMep');
 foreach($builders as $builder) {
     $b = new $builder();
     $b->run();
