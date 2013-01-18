@@ -8,38 +8,76 @@
  * @link   http://www.gracecode.com/
  */
 
-require_once __DIR__ . "/../config.inc.php";
-require_once __DIR__ . "/../common.inc.php";
+class DumpDataFromMep extends Base {
+    const MAX_PAGE = 13000;
+    const MATCH_PARTITION = '%<tr height=30 style="height:30px;">([\s\S]+?)</tr>%'; 
 
-global $Database;
+    function __construct() {
+        parent::__construct();
+    }
 
-define("MAX_PAGE", 13000);
 
-$result = array();
-for ($page = MAX_PAGE; $page > 0; $page--) {
-    $data_file_name = CONFIG_DIR_TEMP . "/" . $page . ".html";
-    if (is_readable($data_file_name)) {
-        $page_data = file_get_contents($data_file_name);
+    public function matchAllItems($page_data) {
+        $results = array();
+        preg_match_all(self::MATCH_PARTITION, $page_data, $matches);
 
-        preg_match_all('%<tr height=30 style="height:30px;">([\s\S]+?)</tr>%', $page_data, $matches);
-        for($i = 2, $len = sizeof($matches[1]); $i < $len; $i++) {
-            $data = trim(strip_tags($matches[1][$i]));
-            $data = (split("\n", $data));
-            if (sizeof($data) == 7) {
-                $record_date = trim($data[2]);
-                $record_date_time = strtotime($record_date);
+        if (isset($matches[1])) {
+            for($i = 2, $len = sizeof($matches[1]); $i < $len; $i++) {
+                $data = trim(strip_tags($matches[1][$i]));
+                $data = (split("\n", $data));
+                if (sizeof($data) == 7) {
+                    $record_date = trim($data[2]);
+                    $value = trim($data[3]);
+                    $area_name = trim($data[1]);
+                    $pollutant = trim($data[4]);
 
-                $area_name = trim($data[1]);
-                $division_id = get_division_id($area_name);
-                $value = trim($data[3]);
+                    $item = array(
+                        'record_date' => strtotime($record_date),
+                        'division_id' => $this->getDivisionId($area_name),
+                        "area_name" => $area_name,
+                        'pollutant' => $pollutant,
+                        'value' => $value,
+                        'source' => "mep"
+                    );
 
-                $pollutant = trim($data[4]);
-                $source = "mep";
-
-                insert_aqi_data_into_database($division_id, $value, $record_date_time, $pollutant, $area_name, $source);
+                    array_push($results, $item);
+                }
             }
         }
+
+        return $results;
+    }
+
+
+    public function run() {
+        for ($page = self::MAX_PAGE; $page > 0; $page--) {
+            $data_file_name = CONFIG_DIR_TEMP . "/mep/" . $page . ".html";
+            if (is_readable($data_file_name)) {
+                $results = $this->matchAllItems(file_get_contents($data_file_name));
+
+                foreach($results as $item) {
+                    $division_id = $item['division_id'];
+                    $value = $item['value'];
+                    $record_date = $item['record_date'];
+                    $pollutant = $item['pollutant'];
+                    $area_name = $item['area_name'];
+                    $source = $item['source'];
+
+                    $last_insert_id = 
+                        $this->insertAqiData($division_id, $value, $record_date, $pollutant, $area_name, $source);
+
+                    if ($last_insert_id) {
+                        $this->log("[dump]Dump data into database with id " . $last_insert_id . "\n");
+                    }
+                }
+            }
+        }
+
+        $this->Database->exec("vacuum");
     }
 }
+
+
+
 
 
