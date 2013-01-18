@@ -23,6 +23,7 @@ $query = "CREATE TABLE IF NOT EXISTS areas (
             division UNSIGNED BIG INT(10) NOT NULL,            
             name VARCHAR(12) NOT NULL,
             engName VARCHAR(64),
+            pinyinName VARCHAR(64),
             bottom BOOLEAN DEFAULT FALSE,
             superior UNSIGNED BIG INT(10)
             )";

@@ -20,8 +20,8 @@ $query = "CREATE TABLE IF NOT EXISTS aqi (
             areaName VARCHAR(12) DEFAULT NULL,
             value INTEGER NOT NULL,
             pollutant INTEGER DEFAULT NULL,
-            recordTime DATETIME NOT NULL,
-            fetchTime DATE NOT NULL,
+            recordDate DATE NOT NULL,
+            _fetchDate DATE NOT NULL,
             source VARCHAR(8) DEFAULT NULL
     )";
 $Database->exec($query);
@@ -36,7 +36,7 @@ echo "...finished\n";
 
 echo "[structs] begin build aqi database index";
 $create_idx = array(
-    "CREATE INDEX aqiRecordTimeIdx ON aqi(recordTime)",
+    "CREATE INDEX aqiRecordTimeIdx ON aqi(recordDate)",
     "CREATE INDEX aqiDivisionIdx ON aqi(division)",
     "CREATE INDEX aqiAreaNameIdx ON aqi(areaName)",
     "CREATE INDEX aqiPollutantNameIdx ON pollutant(name)"

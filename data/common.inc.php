@@ -26,3 +26,54 @@ function get_data_from_url($url) {
 }
 
 
+function get_division_id($area_name) {
+    global $Database;
+    $query = "SELECT division FROM areas WHERE name LIKE '%$area_name%' LIMIT 1";
+    foreach($Database->query($query) as $row) {
+        return $row['division'];
+    }
+
+    return null;
+}
+
+
+function get_pollutant_id($pollutant_name) {
+    global $Database;
+    $pollutant_id = null;
+    $query = "SELECT ID FROM pollutant WHERE name LIKE '%$pollutant_name%' LIMIT 1";
+    foreach($Database->query($query) as $row) {
+        return $row['ID'];
+    }
+
+    $query = "INSERT INTO pollutant(name) VALUES ('$pollutant_name')";
+    $results = $Database->exec($query);
+    if (!$results) {
+        echo "[database] Error! pollutant not updated.\n";
+    }
+
+    return $Database->lastInsertId();
+}
+
+
+function insert_aqi_data_into_database($division, $value, $record_date, $pollutant = "", $area_name = "", $source = "") {
+    global $Database;
+
+    $fetchDate = time();
+    $pollutant_id = null;
+    if (strlen($pollutant) > 2) {
+        $pollutant_id = get_pollutant_id($pollutant);
+    }
+
+    $query = "INSERT INTO aqi
+        (division, value, recordDate, pollutant, areaName, source, _fetchDate) 
+        VALUES 
+        ('$division', '$value', '$record_date', '$pollutant_id', '$area_name', '$source', '$fetchDate')";
+
+    $results = $Database->exec($query);
+    if (!$results) {
+        echo "[database] Error! aqi record not insert.\n";
+    }
+
+    return $Database->lastInsertId();
+}
+
