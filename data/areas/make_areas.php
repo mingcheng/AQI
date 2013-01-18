@@ -8,12 +8,16 @@
  * @link   http://www.gracecode.com/
  */
 
-$sqlite_database = __DIR__ . "/../" . "areas.sqlite";
+require_once __DIR__ . "/../config.inc.php";
+require_once __DIR__ . "/../common.inc.php";
+
+global $Database;
+
+// area data from json file
 $loc = file_get_contents(__DIR__ . "/areas.json");
 $loc_data = json_decode($loc);
 
-$dbh = new PDO("sqlite:$sqlite_database");
-
+// build table structs
 $query = "CREATE TABLE IF NOT EXISTS areas (
             ID INTEGER NOT NULL PRIMARY KEY,
             division UNSIGNED BIG INT(10) NOT NULL,            
@@ -22,17 +26,16 @@ $query = "CREATE TABLE IF NOT EXISTS areas (
             bottom BOOLEAN DEFAULT FALSE,
             superior UNSIGNED BIG INT(10)
             )";
-$results = $dbh->exec($query);
+$Database->exec($query);
 
 function insert_area($data, $superior = 0) {
-    global $dbh;
+    global $Database;
 
     $division = $data->key;
     $name = $data->label;
-    echo $name . "\n";
 
     $query = "INSERT INTO areas(division, name, superior) VALUES ('$division', '$name', '$superior')";
-    $results = $dbh->exec($query);
+    $results = $Database->exec($query);
     if (!$results) {
         echo "not updated";
     }
@@ -43,32 +46,25 @@ function insert_area($data, $superior = 0) {
         }
     } else {
         $query = "UPDATE areas SET bottom = 1 WHERE division='$division'";
-        $dbh->exec($query);
+        $Database->exec($query);
     }
 }
 
-
+echo "[area] begin build area data";
 foreach($loc_data as $data) {
     insert_area($data);
 }
+echo "...finished\n";
 
+echo "[area] begin build area database index";
 $create_idx = array(
-    "CREATE INDEX division_idx ON areas(division)",
-    "CREATE INDEX name_idx ON areas(name)",
-    "CREATE INDEX superior_idx ON areas(surerior)"
+    "CREATE INDEX areaDivisionIdx ON areas(division)",
+    "CREATE INDEX areaNameIdx ON areas(name)",
+    "CREATE INDEX areaSuperiorIdx ON areas(surerior)"
 );
 
 foreach($create_idx as $query) {
-    $dbh->exec($query);
+    $Database->exec($query);
 }
-
-$dbh = null;
-
-/*
-id number
-division number
-name string
-engName string
-superior number
- */
+echo "...finished\n";
 
