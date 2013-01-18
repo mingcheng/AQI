@@ -1,11 +1,8 @@
-all: clean area structs
+all: 
 
-area: 
-	php areas/make_areas.php
-
-structs: area
-	php structs/make_structs.php
+structs:
+	php builder.php
 
 clean:
-	rm -f *.sqlite logs/*
+	rm -f *.sqlite
 
