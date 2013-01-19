@@ -1,6 +1,9 @@
-all: 
+all: fetch
 
-structs:
+fetch:
+	php fetcher.php
+
+base:
 	php builder.php
 
 clean:

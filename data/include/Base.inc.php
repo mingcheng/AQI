@@ -27,12 +27,35 @@ abstract class Base {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, CONFIG_TIMEOUT);
-        curl_setopt($ch, CURLOPT_USERAGENT, CONFIG_USERAGENT);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, self::CONFIG_TIMEOUT);
+        curl_setopt($ch, CURLOPT_USERAGENT, self::CONFIG_USERAGENT);
         curl_setopt($ch, CURLOPT_REFERER, $url);
         $data = curl_exec($ch);
         curl_close($ch);
         return $data;
+    }
+
+
+    public function getLastRecordDate($source) {
+        $query = "SELECT max(recordDate) as max FROM aqi WHERE source = '$source' LIMIT 1";
+
+        foreach($this->Database->query($query) as $row) {
+            return $row['max'];
+        }
+
+        return 0;
+    }
+
+
+    
+    public function getLastFetchDate($source) {
+        $query = "SELECT max(_fetchDate) as max FROM aqi WHERE source = '$source' LIMIT 1";
+
+        foreach($this->Database->query($query) as $row) {
+            return $row['max'];
+        }
+
+        return 0;
     }
 
 
@@ -43,6 +66,18 @@ abstract class Base {
         }
 
         return null;
+    }
+
+
+    public function isRecordExists($record_date, $division, $source) {
+        $query = sprintf("SELECT ID FROM aqi WHERE recordDate = '%d' AND division = '%d' AND source = '%s'", 
+            $record_date, $division, $source);
+
+        foreach($this->Database->query($query) as $row) {
+            return $row['ID'];
+        }
+
+        return false;
     }
 
 
@@ -64,8 +99,14 @@ abstract class Base {
 
 
     public function insertAqiData($division, $value, $record_date, $pollutant = "", $area_name = "", $source = "") {
-        $fetchDate = time(); $pollutant_id = null;
+        if ($this->isRecordExists($record_date, $division, $source)) {
+            $this->log(sprintf("[database]Record with division id %s on %s exists, igonre\n", 
+                $division, date('Y-m-d', $record_date)));
+            return;
+        }
 
+        $fetchDate = time();
+        $pollutant_id = null;
         if (mb_strlen($pollutant, "UTF-8") > 2) {
             $pollutant_id = $this->getPollutantId($pollutant);
         }
