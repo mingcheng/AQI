@@ -54,9 +54,9 @@
 
 ### 扩展使用其他数据源
 
-主要功能为继承 `include/Base.inc.php` 中的基类，同时编写对对应的代码，程序入口为 run 函数。为了方便管理，建议将抓取的对应类文件放到 `fetcher` 目录中。
+主要功能为继承 `include/Base.inc.php` 中的基类，同时编写对对应的代码，程序入口为 `run` 函数。为了方便管理，建议将抓取的对应类文件放到 `fetcher` 目录中。
 
-参考 FetcherMep.inc.php 的实例代码：
+参考 `FetcherMep.inc.php`s 的实例代码：
 
     // 其中 DumpDataFromMep 基于 Base 函数
     class FetcherMep extends DumpDataFromMep {
@@ -87,7 +87,8 @@
 
 ## 参考
 
-1. [维基百科](http://en.wikipedia.org/wiki/Air_quality_index#Mainland_China)
+1. http://en.wikipedia.org/wiki/Air_quality_index#Mainland_China
+
 
 ### 空气质量指数(AQI)范围及相应的空气质量类别对应表
 
@@ -111,6 +112,9 @@
 </table>
 
 
-## 反馈
+## 反馈&amp;联系
 
-
+* https://github.com/feelinglucky/AQI
+* Twitter @feelinglucky / Weibo @手气就是不错
+* Blog http://www.gracecode.com/
+* Email lucky[at]gracecode.com
