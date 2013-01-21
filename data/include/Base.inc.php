@@ -14,12 +14,18 @@ abstract class Base {
     const CONFIG_TIMEOUT = 100;
 
     protected $Database;
+    protected $LogFile;
 
     function __construct() {
         mb_internal_encoding("UTF-8");
         mb_regex_encoding("UTF-8");
 
         $this->Database = new PDO("sqlite:" . CONFIG_DATABASE);
+
+        
+        $log_file_name = CONFIG_DIR_LOGS . "/" . date("Y-m-d") . ".log";
+
+        $this->LogFile = fopen($log_file_name, "a+");
     }
 
 
@@ -126,6 +132,7 @@ abstract class Base {
 
 
     protected function log($message) {
+        fputs($this->LogFile, date('r') . " " . $message);
         echo $message;
     }
 
@@ -133,7 +140,7 @@ abstract class Base {
     abstract public function run();  
 
     function __destruct() {
-
+        fclose($this->LogFile);
         $this->Database = null;
     }
 }

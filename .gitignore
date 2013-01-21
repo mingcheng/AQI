@@ -32,3 +32,4 @@ data/logs/*
 data/*.sqlite
 
 /data/tmp/
+/assets/aqi.sqlite
