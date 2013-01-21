@@ -18,8 +18,68 @@
 
 ### 字段说明
 
+以下是 SQLite 的主要表的字段说明，省去索引部分说明。
+
+    sqlite> .schema
+            -- 空气质量主数据表
+    CREATE TABLE aqi (
+                ID INTEGER NOT NULL PRIMARY KEY,          
+                division UNSIGNED BIG INT(10) NOT NULL,     - 行政编码
+                areaName VARCHAR(12) DEFAULT NULL,          - 地区名
+                value INTEGER NOT NULL,                     - 值
+                pollutant INTEGER DEFAULT NULL,             - 污染类型
+                recordDate DATE NOT NULL,                   - 记录时间
+                _fetchDate DATE NOT NULL,                   - 抓取时间
+                source VARCHAR(8) DEFAULT NULL              - 来源
+            );
+            -- 地区表
+    CREATE TABLE areas (
+                ID INTEGER NOT NULL PRIMARY KEY,
+                division UNSIGNED BIG INT(10) NOT NULL,     - 行政编码 
+                name VARCHAR(12) NOT NULL,                  - 地区名
+                engName VARCHAR(64),                        - 地区英文名
+                pinyinName VARCHAR(64),                     - 地区中文拼音
+                bottom BOOLEAN DEFAULT FALSE,               - 是否是最后一级地区
+                superior UNSIGNED BIG INT(10)               - 上级地区编码，顶级为0
+            );
+            -- 污染类型表
+    CREATE TABLE pollutant (
+                ID INTEGER NOT NULL PRIMARY KEY,
+                name VARCHAR(32) NOT NULL                   - 污染类型名称
+            );
+            
 
 ## 扩展
+
+
+### 扩展使用其他数据源
+
+主要功能为继承 `include/Base.inc.php` 中的基类，同时编写对对应的代码，程序入口为 run 函数。为了方便管理，建议将抓取的对应类文件放到 `fetcher` 目录中。
+
+参考 FetcherMep.inc.php 的实例代码：
+
+    // 其中 DumpDataFromMep 基于 Base 函数
+    class FetcherMep extends DumpDataFromMep {
+        public function run() {
+            // 请求线上地址
+            $this->getDateFromUrl($url);
+            // ...
+        }
+    }
+    
+然后修改 `fetcher.php` 文件中需要执行的类加入到数组中：
+
+    $builders = array('FetcherMep');
+
+它们就会顺序执行。
+
+#### 定时抓取
+
+强烈建议使用 `crontab` 等工具定时抓取线上数据，可以考虑使用 
+
+    $make fetch 
+
+方法，详细可以参见 `Makefile 文件`。
 
 
 ## 更新 
