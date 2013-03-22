@@ -42,8 +42,10 @@ abstract class Base {
     }
 
 
-    public function getLastRecordDate($source) {
-        $query = "SELECT max(recordDate) as max FROM aqi WHERE source = '$source' LIMIT 1";
+    public function getLastRecordDate($source = null) {
+
+        $query = "SELECT max(recordDate) as max FROM aqi " . 
+            ($source ? " WHERE source = '$source' " : "") ." LIMIT 1";
 
         foreach($this->Database->query($query) as $row) {
             return $row['max'];
@@ -53,9 +55,20 @@ abstract class Base {
     }
 
 
+    public function getTotalRecordCount() {
+        $query = "SELECT count(ID) as count FROM aqi LIMIT 1";
+
+        foreach($this->Database->query($query) as $row) {
+            return $row['count'];
+        }
+
+        return 0;
+    }
+
     
-    public function getLastFetchDate($source) {
-        $query = "SELECT max(_fetchDate) as max FROM aqi WHERE source = '$source' LIMIT 1";
+    public function getLastFetchDate($source = null) {
+        $query = "SELECT max(_fetchDate) as max FROM aqi " . 
+            ($source ? " WHERE source = '$source' " : "") . " LIMIT 1";
 
         foreach($this->Database->query($query) as $row) {
             return $row['max'];

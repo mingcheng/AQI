@@ -1,15 +1,11 @@
 # 中国大陆重点城市空气质量历史数据库
  
-> 声明：本项目提供的数据所有权权归原始方所有，在未获得所有方任何形式认可
-的情况下，请勿将本数据用作商业目的。本程序提供的数据仅用作参考，不做任
-何形式的承诺、担保以及负责。
+> 声明：本项目提供的数据所有权权归原始方所有，在未获得所有方任何形式认可的情况下，请勿将本数据用作商业目的。本程序提供的数据仅用作参考，不做任何形式的承诺、担保以及负责。
 
 
 ## 数据源
 
-目前基于 [中华人民共和国环境保护部信息中心]( http://datacenter.mep.gov.cn/ ) 等其他公共数据来源抓取并汇总而成，提供给网友作为当地空气质量的历史数据参考。
-
-如有其他的数据源，欢迎网友提供。
+目前基于 [中华人民共和国环境保护部信息中心]( http://datacenter.mep.gov.cn/ ) 等其他公共数据来源抓取并汇总而成，提供给网友作为当地空气质量的历史数据参考。<del>如有其他的数据源，欢迎网友提供。</del>
 
 
 ## 数据库 
@@ -64,6 +60,10 @@
             // 请求线上地址
             $this->getDateFromUrl($url);
             // ...
+            // 插入到数据库
+            $this->insertAqiData($item['division_id'], 
+                          $item['value'], $item['record_date'], $item['pollutant'], 
+                          $item['area_name'], self::FLAG_SOURCE);
         }
     }
     
@@ -82,13 +82,10 @@
 方法，详细可以参见 `Makefile 文件`。
 
 
-## 更新 
-
-
 ## 参考
 
 1. http://en.wikipedia.org/wiki/Air_quality_index#Mainland_China
-
+2. 中国大陆地区的行政区划参见 assets/area.json 文件，JSON  格式
 
 ### 空气质量指数(AQI)范围及相应的空气质量类别对应表
 
@@ -114,7 +111,8 @@
 
 ## 反馈&amp;联系
 
-* https://github.com/feelinglucky/AQI
-* Twitter @feelinglucky / Weibo @手气就是不错
+* Homepage https://github.com/feelinglucky/AQI
+* Twitter [@feelinglucky](https://twitter.com/feelinglucky)
+* Weibo [@手气还不错](http://weibo.com/feelinglucky)
 * Blog http://www.gracecode.com/
 * Email lucky[at]gracecode.com
