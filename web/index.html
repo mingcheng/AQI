@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>中国大陆重点城市空气质量（AQI）历史数据 - Gracecode.com</title>
+        <link rel="icon" href="http://www.gracecode.com/assets/untitled/media/images/wu@64x64.png" type="image/x-icon"/>
+        <link rel="shortcut icon" href="http://www.gracecode.com/assets/untitled/media/images/wu@64x64.png" type="image/png" />
+        <style>
+            body {
+                margin: 0px;
+                padding: 0px;
+                border-top: 10px solid #333;
+                color: #333;
+                background: #eee;
+                font-size: 14px;
+            }
+
+            h1, h2, h3,h4,
+            a:link, a:visited {
+                text-decoration: none;
+                color: #c33;
+            }
+
+            #content {
+                width: 750px;
+                margin: 3em auto;
+            }
+
+            #chart_div {
+                width: 100%;
+                height: 300px;
+            }
+
+            #footnote {
+                text-align: right;
+                font-size: small;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="content">
+            <h1>中国大陆重点城市空气质量（AQI）历史数据</h1>
+            <div id='chart_div'></div>
+            <h2 id="location"></h2>
+            <p>
+            声明：本项目提供的数据所有权权归原始方所有，在未获得所有方任何形式认可的情况下，请勿将本数据用作商业
+            目的。本程序提供的数据仅用作参考，不做任何形式的承诺、担保以及负责。
+            </p>
+            <p>
+            项目地址：<a href="https://github.com/feelinglucky/AQI">https://github.com/feelinglucky/AQI</a>
+            </p>
+            <hr />
+            <p id="footnote">
+            <a href="http://www.gracecode.com/">無標題文檔</a>
+            </p>
+        </div>
+        <script type='text/javascript' src='data.php?division=330200'></script>
+        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+        <script type='text/javascript'>
+            google.load('visualization', '1', {'packages':['annotatedtimeline']});
+
+            function drawChart() {
+                var handler = new google.visualization.DataTable();
+                handler.addColumn('date', 'Date');
+                handler.addColumn('number', 'AQI');
+                handler.addRows(data);
+
+                var chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart_div'));
+                chart.draw(handler, {displayAnnotations: true});
+
+                document.getElementById("location").innerHTML = areaName;
+            }
+
+            google.setOnLoadCallback(drawChart);
+        </script>
+    </body>
+</html>
