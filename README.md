@@ -111,6 +111,7 @@
 
 ## 反馈&amp;联系
 
+* Blog 介绍 http://www.gracecode.com/posts/mainland-china-aqi-database-download.html
 * Homepage https://github.com/feelinglucky/AQI
 * Twitter [@feelinglucky](https://twitter.com/feelinglucky)
 * Weibo [@手气还不错](http://weibo.com/feelinglucky)
