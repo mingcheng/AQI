@@ -21,10 +21,7 @@ abstract class Base {
         mb_regex_encoding("UTF-8");
 
         $this->Database = new PDO("sqlite:" . CONFIG_DATABASE);
-
-        
         $log_file_name = CONFIG_DIR_LOGS . "/" . date("Y-m-d") . ".log";
-
         $this->LogFile = fopen($log_file_name, "a+");
     }
 
@@ -35,6 +32,7 @@ abstract class Base {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, self::CONFIG_TIMEOUT);
         curl_setopt($ch, CURLOPT_USERAGENT, self::CONFIG_USERAGENT);
+        curl_setopt($ch, CURLOPT_FORBID_REUSE, TRUE);
         curl_setopt($ch, CURLOPT_REFERER, $url);
         $data = curl_exec($ch);
         curl_close($ch);
@@ -119,8 +117,8 @@ abstract class Base {
 
     public function insertAqiData($division, $value, $record_date, $pollutant = "", $area_name = "", $source = "") {
         if ($this->isRecordExists($record_date, $division, $source)) {
-            $this->log(sprintf("[database]Record with division id %s on %s exists, igonre\n", 
-                $division, date('Y-m-d', $record_date)));
+            $this->log(sprintf("Record with name which is %s(%s) is exists, ignore.\n",
+                $area_name, date('Y-m-d', $record_date)));
             return;
         }
 
@@ -137,7 +135,7 @@ abstract class Base {
 
         $results = $this->Database->exec($query);
         if (!$results) {
-            echo "[database] Error! aqi record not insert.\n";
+            echo "Error! aqi record not insert.\n";
         }
 
         return $this->Database->lastInsertId();

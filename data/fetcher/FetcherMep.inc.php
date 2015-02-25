@@ -20,7 +20,7 @@ class FetcherMep extends DumpDataFromMep {
         parent::__construct();
 
         $this->last_record_date = $this->getLastRecordDate(self::FLAG_SOURCE);
-        $this->log('[fetch mep] last record data is ' . date('r', $this->last_record_date) . "\n");
+        $this->log('Last record data is ' . date('r', $this->last_record_date) . "\n");
     }
 
     private function setTotalPage() {
@@ -34,11 +34,7 @@ class FetcherMep extends DumpDataFromMep {
             $this->total_page = $matches[1];
         }
 
-        $this->log('[fetch mep] get total page is '. $this->total_page ."\n");
-
-        if ($this->total_page > 1) {
-            $this->recordDataFromPage($page_data);
-        }
+        $this->log('Total page is ' . $this->total_page . "\n");
     }
 
 
@@ -52,7 +48,8 @@ class FetcherMep extends DumpDataFromMep {
                 $item['area_name'], self::FLAG_SOURCE);
 
             if ($last_insert_id) {
-                $this->log("[dump]Dump data into database with id " . $last_insert_id . "\n");
+                $this->log(sprintf("The data which name is %s(%d) has been inserted into database.\n",
+                    $item['area_name'], $last_insert_id));
             }
         }
     }
@@ -67,6 +64,8 @@ class FetcherMep extends DumpDataFromMep {
                 sprintf(self::URL_QUERY, 
                     date(self::FORMAT_DATE, $this->last_record_date), date(self::FORMAT_DATE), $this->total_page);
 
+            $this->log($request . "\n");
+            $this->log(sprintf("Total page remain %d\n", $this->total_page));
             $page_data = $this->getDateFromUrl($request);
             $this->recordDataFromPage($page_data);
         }
