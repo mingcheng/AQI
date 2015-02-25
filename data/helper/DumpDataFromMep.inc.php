@@ -24,11 +24,11 @@ class DumpDataFromMep extends Base {
         if (isset($matches[1])) {
             for($i = 2, $len = sizeof($matches[1]); $i < $len; $i++) {
                 $data = trim(strip_tags($matches[1][$i]));
-                $data = (split("\n", $data));
-                if (sizeof($data) == 7) {
+                $data = preg_split("/\n/", $data);
+                if (sizeof($data) == 6) {
+                    $area_name = preg_replace("/市$/", "", trim($data[1]));
                     $record_date = trim($data[2]);
                     $value = trim($data[3]);
-                    $area_name = trim($data[1]);
                     $pollutant = trim($data[4]);
 
                     $item = array(
