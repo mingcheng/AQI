@@ -30,6 +30,8 @@ local.properties
 data/pages/*
 data/logs/*
 data/*.sqlite
+data/*.csv
 
 /data/tmp/
-/assets/aqi.sqlite
+/assets/*.csv
+/assets/*.sqlite
