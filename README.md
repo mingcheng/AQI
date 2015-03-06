@@ -2,6 +2,9 @@
  
 > 声明：本项目提供的数据所有权权归原始方所有，在未获得所有方任何形式认可的情况下，请勿将本数据用作商业目的。本程序提供的数据仅用作参考，不做任何形式的承诺、担保以及负责。
 
+## 下载
+
+如果您只是想获取最终数据，请您访问 http://www.gracecode.com/aqi.html 。
 
 ## 数据源
 
@@ -111,9 +114,6 @@
 
 ## 反馈&amp;联系
 
-* Blog 介绍 http://www.gracecode.com/posts/mainland-china-aqi-database-download.html
-* Homepage https://github.com/feelinglucky/AQI
-* Twitter [@feelinglucky](https://twitter.com/feelinglucky)
-* Weibo [@手气还不错](http://weibo.com/feelinglucky)
-* Blog http://www.gracecode.com/
-* Email lucky[at]gracecode.com
+*  [@feelinglucky](https://twitter.com/feelinglucky)
+*  http://www.gracecode.com/
+*  lucky[at]gracecode.com
