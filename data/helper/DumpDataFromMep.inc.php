@@ -25,11 +25,13 @@ class DumpDataFromMep extends Base {
             for($i = 2, $len = sizeof($matches[1]); $i < $len; $i++) {
                 $data = trim(strip_tags($matches[1][$i]));
                 $data = preg_split("/\n/", $data);
-                if (sizeof($data) == 6) {
+                if (sizeof($data) >= 5) {
+                    $org_id = intval($data[0]);
                     $area_name = preg_replace("/市$/", "", trim($data[1]));
                     $record_date = trim($data[2]);
                     $value = trim($data[3]);
                     $pollutant = trim($data[4]);
+                    $source = trim(isset($data[5]) ? $data[5] : '');
 
                     $item = array(
                         'record_date' => strtotime($record_date),
@@ -37,7 +39,7 @@ class DumpDataFromMep extends Base {
                         "area_name" => $area_name,
                         'pollutant' => $pollutant,
                         'value' => $value,
-                        'source' => "mep"
+                        'source' => $source
                     );
 
                     array_push($results, $item);

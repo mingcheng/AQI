@@ -7,5 +7,5 @@ base:
 	php builder.php
 
 clean:
-	rm -f *.sqlite
+	rm -f *.sqlite logs/*.log
 
